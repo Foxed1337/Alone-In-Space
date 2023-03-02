@@ -21,17 +21,10 @@ import java.util.stream.Collectors;
 public class Level {
 
     private final RayCasting rayCasting;
-
     private final GameMap gameMap;
-
-    private final int screenWidth;
-    private final int screenHeight;
-
     private final List<GameObject> gameObjects;
 
     public Level(int screenWidth, int screenHeight) {
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
         gameObjects = new ArrayList<>();
         Player player = new Player(screenWidth / 2, screenHeight / 2, 25, 32, 32, 20, Vector2D.getVector(0, 0));
         gameObjects.add(player);
@@ -98,16 +91,13 @@ public class Level {
     }
 
     public void render(Graphics2D g) {
-        g.setStroke(new BasicStroke(0.5f));;
+        g.setStroke(new BasicStroke(0.5f));
         gameObjects.forEach(gameObject -> gameObject.render(g));
         rayCasting.render(g);
         g.setStroke(new BasicStroke(20));
         g.setColor(new Color(0x800080));
         Camera.render(g);
-        g.drawLine(gameMap.getLeftBorder(), gameMap.getTopBorder(), gameMap.getRightBorder(), gameMap.getTopBorder());
-        g.drawLine(gameMap.getLeftBorder(), gameMap.getTopBorder(), gameMap.getLeftBorder(), gameMap.getBottomBorder());
-        g.drawLine(gameMap.getRightBorder(), gameMap.getTopBorder(), gameMap.getRightBorder(), gameMap.getBottomBorder());
-        g.drawLine(gameMap.getLeftBorder(), gameMap.getBottomBorder(), gameMap.getRightBorder(), gameMap.getBottomBorder());
+        g.drawRect(gameMap.getLeftBorder(), gameMap.getTopBorder(), gameMap.getWidth(), gameMap.getHeight());
     }
 
     public void rayCast(Point mousePosition) {

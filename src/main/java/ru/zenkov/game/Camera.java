@@ -64,14 +64,6 @@ public class Camera {
             }
         }
 
-//        System.out.println("-------------------");
-//        System.out.println(gameMap.getLeftBorder());
-//        System.out.println(gameMap.getRightBorder());
-//        System.out.println(gameMap.getTopBorder());
-//        System.out.println(gameMap.getBottomBorder());
-//        System.out.println("-------------------");
-
-
         for (GameObject go : gameObjects) {
             if (canChangeX) {
                 int newX = (go.getX() - dx2);
@@ -86,29 +78,5 @@ public class Camera {
 
     public static void render(Graphics2D g) {
         g.fillOval(xRelativelyScreen, yRelativelyScreen, 5, 5);
-    }
-
-    public static int getLeft() {
-        return xRelativelyScreen - width / 2;
-    }
-
-    public static int getRight() {
-        return xRelativelyScreen + width / 2;
-    }
-
-    public static int getTop() {
-        return yRelativelyScreen - height / 2;
-    }
-
-    public static int getBottom() {
-        return yRelativelyScreen + height / 2;
-    }
-
-    public static int getWidth() {
-        return width;
-    }
-
-    public static int getHeight() {
-        return height;
     }
 }
