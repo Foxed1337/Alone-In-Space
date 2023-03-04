@@ -2,13 +2,11 @@ package ru.zenkov.game;
 
 
 import ru.zenkov.IO.Input;
-import ru.zenkov.game.entity.Entity;
-import ru.zenkov.game.entity.EntityType;
-import ru.zenkov.game.entity.Player;
-import ru.zenkov.game.entity.Rock;
+import ru.zenkov.game.entity.*;
 import ru.zenkov.phisics.rayCasting.RayCasting;
 import ru.zenkov.phisics.Vector2D;
 import ru.zenkov.collision.Collision;
+import ru.zenkov.phisics.rayCasting.ReflectingLine;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,20 +23,34 @@ public class Level {
 
     public Level(int screenWidth, int screenHeight) {
         entities = new ArrayList<>();
-        Player player = new Player(screenWidth / 2, screenHeight / 2, 25, 32, 32, 20, Vector2D.getVector(0, 0));
-        entities.add(player);
-        entities.add(new Rock(400, 400, 50, 45, 45, 0, Vector2D.getVector(0, 0)));
-        entities.add(new Rock(100, 100, 100, 60, 60, 10, Vector2D.getVector(0, 0)));
-        entities.add(new Rock(250, 349, 75, 70, 70, 10, Vector2D.getVector(0, 0)));
-        entities.add(new Rock(400, 400, 50, 45, 45, 10, Vector2D.getVector(0, 0)));
-        entities.add(new Rock(100, 100, 100, 60, 60, 10, Vector2D.getVector(0, 0)));
-        entities.add(new Rock(250, 349, 75, 70, 70, 10, Vector2D.getVector(0, 0)));
-
-
-        rayCasting = new RayCasting(1, player);
-
         this.gameMap = GameMap.getMap(2000, 2000, screenWidth, screenHeight);
-        Camera.init(screenWidth, screenHeight, 10, 10, player);
+        EntityManager.setGameMap(gameMap);
+        Entity player = EntityManager.get(EntityType.PLAYER);
+        entities.add(player);
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+        entities.add(EntityManager.get(EntityType.ROCK));
+
+
+        rayCasting = new RayCasting(1, (Player) player);
+
+
+        Camera.init(screenWidth, screenHeight, 10, 10, (Player) player);
 
 
     }
@@ -97,17 +109,21 @@ public class Level {
         g.setStroke(new BasicStroke(20));
         g.setColor(new Color(0x800080));
         Camera.render(g);
-        g.drawRect(gameMap.getLeftBorder(), gameMap.getTopBorder(), gameMap.getWidth(), gameMap.getHeight());
+      //  g.drawRect(gameMap.getLeftBorder(), gameMap.getTopBorder(), gameMap.getWidth(), gameMap.getHeight());
     }
 
     public void rayCast(Point mousePosition) {
-
-        rayCasting.castRays(entities
+        var a = entities
                 .stream()
                 .filter(go -> go.type == EntityType.ROCK)
                 .map(Entity::getReflectingLines)
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList()), mousePosition);
+                .collect(Collectors.toList());
+        a.add(ReflectingLine.getReflectingLine(gameMap.getLeftBorder() + 10, gameMap.getTopBorder() + 10, gameMap.getRightBorder() - 10, gameMap.getTopBorder() + 10));
+        a.add(ReflectingLine.getReflectingLine(gameMap.getLeftBorder() + 10, gameMap.getBottomBorder() - 10, gameMap.getRightBorder() - 10, gameMap.getBottomBorder() - 10));
+        a.add(ReflectingLine.getReflectingLine(gameMap.getLeftBorder() + 10, gameMap.getTopBorder() + 10, gameMap.getLeftBorder() + 10, gameMap.getBottomBorder() - 10));
+        a.add(ReflectingLine.getReflectingLine(gameMap.getRightBorder() - 10, gameMap.getTopBorder() + 10, gameMap.getRightBorder() - 10, gameMap.getBottomBorder() - 10));
+        rayCasting.castRays(a, mousePosition);
     }
 }
 

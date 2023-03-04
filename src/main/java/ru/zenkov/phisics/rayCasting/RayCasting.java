@@ -12,6 +12,7 @@ public class RayCasting {
     private final List<Ray> rays;
     private List<Ray> rotatedRays;
     private final Player player;
+    private final int maxRayRange = 300;
 
 
     public RayCasting(int rayCount, Player player) {
@@ -27,10 +28,7 @@ public class RayCasting {
 
     public void castRays(List<ReflectingLine> reflectingLines, Point mousePosition) {
 
-        double maxRange = 220;
-
-        if (mousePosition != null)
-            rotatedRays = rotate(mousePosition);
+        if (mousePosition != null) rotatedRays = rotate(mousePosition);
 
         for (Ray ray : rays) {
             Vector2D closest = null;
@@ -47,12 +45,12 @@ public class RayCasting {
                     }
                 }
             }
-            if (closest != null && (Vector2D.getMod(closest.getX() - ray.getX1(), closest.getY() - ray.getY1()) <= maxRange)) {
+            if (closest != null && (Vector2D.getMod(closest.getX() - ray.getX1(), closest.getY() - ray.getY1()) <= maxRayRange)) {
                 ray.setX2(closest.getX());
                 ray.setY2(closest.getY());
             } else {
-                ray.setX2(player.getX() + ray.getDirection().getX() * maxRange);
-                ray.setY2(player.getY() + ray.getDirection().getY() * maxRange);
+                ray.setX2(player.getX() + ray.getDirection().getX() * maxRayRange);
+                ray.setY2(player.getY() + ray.getDirection().getY() * maxRayRange);
             }
         }
     }
@@ -67,13 +65,13 @@ public class RayCasting {
 //            prev.render(g);
 //            g.drawLine((int) prev.getX2(), (int) prev.getY2(), (int) cur.getX2(), (int) cur.getY2());
 //        }
-        double maxRange = 220;
+
+        //TODO первый и полседний луч не соединяются
         g.setStroke(new BasicStroke(0.7f));
         for (int i = 1; i < rays.size(); i++) {
             Ray ray1 = rays.get(i - 1);
             Ray ray2 = rays.get(i);
-            if ((Vector2D.getMod(ray1.getX1() - ray1.getX2(), ray1.getY1() - ray1.getY2()) < maxRange - 1)
-                    && (Vector2D.getMod(ray2.getX1() - ray2.getX2(), ray2.getY1() - ray2.getY2()) < maxRange - 1)) {
+            if ((Vector2D.getMod(ray1.getX1() - ray1.getX2(), ray1.getY1() - ray1.getY2()) < maxRayRange - 1) && (Vector2D.getMod(ray2.getX1() - ray2.getX2(), ray2.getY1() - ray2.getY2()) < maxRayRange - 1)) {
                 g.drawLine((int) ray1.getX2(), (int) ray1.getY2(), (int) ray2.getX2(), (int) ray2.getY2());
             }
         }
