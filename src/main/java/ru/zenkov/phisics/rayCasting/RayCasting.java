@@ -1,7 +1,6 @@
 package ru.zenkov.phisics.rayCasting;
 
 import ru.zenkov.game.entity.Player;
-import ru.zenkov.game.entity.Wall;
 import ru.zenkov.phisics.Vector2D;
 
 import java.awt.*;
@@ -18,7 +17,7 @@ public class RayCasting {
     public RayCasting(int rayCount, Player player) {
         this.player = player;
         rays = new ArrayList<>();
-        for (int i = 0 ; i <= 359; i += 1) {
+        for (int i = 0; i <= 359; i += 3) {
             double x = Math.cos(Math.toRadians(i));
             double y = Math.sin(Math.toRadians(i));
             rays.add(new Ray(Vector2D.getVector(x, y)));
@@ -26,7 +25,7 @@ public class RayCasting {
         rotatedRays = List.copyOf(rays);
     }
 
-    public void castRays(List<Wall> walls, Point mousePosition) {
+    public void castRays(List<ReflectingLine> reflectingLines, Point mousePosition) {
 
         double maxRange = 220;
 
@@ -38,8 +37,8 @@ public class RayCasting {
             double record = Double.POSITIVE_INFINITY;
             ray.setX1(player.getX());
             ray.setY1(player.getY());
-            for (Wall wall : walls) {
-                Vector2D pt = ray.cast(player, wall);
+            for (ReflectingLine reflectingLine : reflectingLines) {
+                Vector2D pt = ray.cast(player, reflectingLine);
                 if (pt != null) {
                     double d = Vector2D.getMod(pt.getX() - ray.getX1(), pt.getY() - ray.getY1());
                     if (d < record) {
@@ -60,7 +59,7 @@ public class RayCasting {
 
 
     public void render(Graphics2D g) {
-//        rotatedRays.forEach(ray -> ray.render(g));
+//        rotatedRays.forEach(ray -> ray.render(g));/
         rays.forEach(ray -> ray.render(g));
 //        for (int i = 1; i < rotatedRays.size(); i++) {
 //            Ray prev = rotatedRays.get(i - 1);
@@ -68,6 +67,16 @@ public class RayCasting {
 //            prev.render(g);
 //            g.drawLine((int) prev.getX2(), (int) prev.getY2(), (int) cur.getX2(), (int) cur.getY2());
 //        }
+        double maxRange = 220;
+        g.setStroke(new BasicStroke(0.7f));
+        for (int i = 1; i < rays.size(); i++) {
+            Ray ray1 = rays.get(i - 1);
+            Ray ray2 = rays.get(i);
+            if ((Vector2D.getMod(ray1.getX1() - ray1.getX2(), ray1.getY1() - ray1.getY2()) < maxRange - 1)
+                    && (Vector2D.getMod(ray2.getX1() - ray2.getX2(), ray2.getY1() - ray2.getY2()) < maxRange - 1)) {
+                g.drawLine((int) ray1.getX2(), (int) ray1.getY2(), (int) ray2.getX2(), (int) ray2.getY2());
+            }
+        }
 
 //        Polygon pol = new Polygon();
 //        pol.addPoint(player.getX(), player.getY());

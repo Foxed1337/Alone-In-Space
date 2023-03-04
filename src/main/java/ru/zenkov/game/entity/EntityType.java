@@ -1,5 +1,5 @@
 package ru.zenkov.game.entity;
 
-public enum GameObjectType {
+public enum EntityType {
     PLAYER, BULLET, ROCK
 }

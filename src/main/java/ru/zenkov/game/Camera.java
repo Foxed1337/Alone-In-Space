@@ -1,6 +1,6 @@
 package ru.zenkov.game;
 
-import ru.zenkov.game.entity.GameObject;
+import ru.zenkov.game.entity.Entity;
 import ru.zenkov.game.entity.Player;
 import ru.zenkov.phisics.Vector2D;
 
@@ -30,7 +30,7 @@ public class Camera {
     }
 
 
-    public static void update(List<GameObject> gameObjects, GameMap gameMap) {
+    public static void update(List<Entity> entities, GameMap gameMap) {
 
         int dx = player.getX() - xRelativelyScreen;
         int dy = player.getY() - yRelativelyScreen;
@@ -64,7 +64,7 @@ public class Camera {
             }
         }
 
-        for (GameObject go : gameObjects) {
+        for (Entity go : entities) {
             if (canChangeX) {
                 int newX = (go.getX() - dx2);
                 go.setX(newX);

@@ -19,8 +19,8 @@ public class Game implements Runnable, Callable<Void> {
     private boolean running;
     private Thread gameThread;
     private Callable<Void> onCloseRoutine;
-    private Graphics2D displayGraphics;
-    private Input input;
+    private final Graphics2D displayGraphics;
+    private final Input input;
     private Level level;
 
     public Game() {
@@ -29,8 +29,8 @@ public class Game implements Runnable, Callable<Void> {
                 .withTitle(TITLE)
                 .withInput(input)
                 .withCustomOnCloseOperation(this)
-                .withWidth(500)
-                .withHeight(500)
+                .withWidth(800)
+                .withHeight(600)
                 .makeWithAntialiasing()
                 .withAntialiasing((byte) 1)
                 .withMultiBuffering(3);

@@ -1,10 +1,10 @@
-package ru.zenkov.сollision;
+package ru.zenkov.collision;
 
-import ru.zenkov.game.entity.GameObject;
+import ru.zenkov.game.entity.Entity;
 import ru.zenkov.phisics.Vector2D;
 
 public class Collision {
-    public static void interact(GameObject go1, GameObject go2) {
+    public static void interact(Entity go1, Entity go2) {
 
         Vector2D dirActForceObj1 = Vector2D.getUnitVector(Vector2D.getForceDirection(go1.getX(), go1.getY(), go2.getX(), go2.getY()));
         Vector2D dirActForceObj2 = dirActForceObj1.invert();
@@ -38,19 +38,19 @@ public class Collision {
 
     }
 
-    public static boolean areIntersectedCircle(GameObject go1, GameObject go2) {
+    public static boolean areIntersectedCircle(Entity go1, Entity go2) {
         double d = Vector2D.getMod(go1.getX() - go2.getX(), go1.getY() - go2.getY());
         return (go1.getWidth() + go2.getWidth()) / 2f >= d;
     }
 
-    public static boolean areIntersectedRect(GameObject go1, GameObject go2) {
+    public static boolean areIntersectedRect(Entity go1, Entity go2) {
         double xIntersection = getIntersectionLength(go1.getLeft(), go1.getRight(), go2.getLeft(), go2.getRight());
         double yIntersection = getIntersectionLength(go1.getTop(), go1.getBottom(), go2.getTop(), go2.getBottom());
 
         return xIntersection >= 0 && yIntersection >= 0;
     }
 
-    public static boolean areIntersectedRect(double left, double right, double top, double bottom, GameObject go) {
+    public static boolean areIntersectedRect(double left, double right, double top, double bottom, Entity go) {
         double xIntersection = getIntersectionLength(go.getLeft(), go.getRight(), left, right);
         double yIntersection = getIntersectionLength(go.getTop(), go.getBottom(), top, bottom);
 

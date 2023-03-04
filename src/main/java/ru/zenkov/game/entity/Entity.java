@@ -1,12 +1,13 @@
 package ru.zenkov.game.entity;
 
 import ru.zenkov.IO.Input;
-import ru.zenkov.game.entity.GameObjectType;
 import ru.zenkov.phisics.Vector2D;
+import ru.zenkov.phisics.rayCasting.ReflectingLine;
+import java.util.List;
 
 import java.awt.*;
 
-public abstract class GameObject {
+public abstract class Entity {
 
     protected float RESISTANCE = 0.33f;
 
@@ -20,10 +21,10 @@ public abstract class GameObject {
     protected Vector2D resultantForce;
     protected Vector2D resistanceForce;
 
-    public GameObjectType type;
+    public EntityType type;
 
 
-    protected GameObject(int x, int y, double mass, int width, int height, double speed, Vector2D resultantForce) {
+    protected Entity(int x, int y, double mass, int width, int height, double speed, Vector2D resultantForce) {
         this.x = x;
         this.y = y;
         this.mass = mass;
@@ -37,6 +38,8 @@ public abstract class GameObject {
     public abstract void update(Input input, Point mousePosition);
 
     public abstract void render(Graphics2D g);
+
+    public abstract List<ReflectingLine> getReflectingLines();
 
     public void move() {
 

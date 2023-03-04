@@ -1,27 +1,26 @@
 package ru.zenkov.phisics.rayCasting;
 
 import ru.zenkov.game.entity.Player;
-import ru.zenkov.game.entity.Wall;
 import ru.zenkov.phisics.Vector2D;
 
 import java.awt.*;
 
 public class Ray {
     private Vector2D direction;
-    private double X1;
-    private double Y1;
-    private double X2;
-    private double Y2;
+    private double x1;
+    private double y1;
+    private double x2;
+    private double y2;
 
     public Ray(Vector2D dir) {
         this.direction = dir;
     }
 
-    public Vector2D cast(Player player, Wall wall) {
-        double x1 = wall.getPt1().getX();
-        double y1 = wall.getPt1().getY();
-        double x2 = wall.getPt2().getX();
-        double y2 = wall.getPt2().getY();
+    public Vector2D cast(Player player, ReflectingLine reflectingLine) {
+        double x1 = reflectingLine.getPt1().getX();
+        double y1 = reflectingLine.getPt1().getY();
+        double x2 = reflectingLine.getPt2().getX();
+        double y2 = reflectingLine.getPt2().getY();
 
         double x3 = player.getX();
         double y3 = player.getY();
@@ -46,7 +45,7 @@ public class Ray {
 
     public void render(Graphics2D g) {
 
-        g.drawLine((int) X1, (int) Y1, (int) X2, (int) Y2);
+        g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
     }
 
     public Vector2D getDirection() {
@@ -58,34 +57,34 @@ public class Ray {
     }
 
     public double getX1() {
-        return X1;
+        return x1;
     }
 
     public void setX1(double x1) {
-        this.X1 = (int) x1;
+        this.x1 = (int) x1;
     }
 
     public double getY1() {
-        return Y1;
+        return y1;
     }
 
     public void setY1(double y1) {
-        this.Y1 = (int) y1;
+        this.y1 = (int) y1;
     }
 
     public double getX2() {
-        return X2;
+        return x2;
     }
 
     public void setX2(double x2) {
-        this.X2 = (int) x2;
+        this.x2 = (int) x2;
     }
 
     public double getY2() {
-        return Y2;
+        return y2;
     }
 
     public void setY2(double y2) {
-        this.Y2 = (int) y2;
+        this.y2 = (int) y2;
     }
 }

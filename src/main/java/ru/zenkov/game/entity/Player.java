@@ -2,14 +2,16 @@ package ru.zenkov.game.entity;
 
 import ru.zenkov.IO.Input;
 import ru.zenkov.phisics.Vector2D;
+import ru.zenkov.phisics.rayCasting.ReflectingLine;
 import ru.zenkov.utils.ResourceLoader;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
-public class Player extends GameObject {
+public class Player extends Entity {
 
     private final BufferedImage image;
     protected Vector2D movingDirection;
@@ -19,7 +21,7 @@ public class Player extends GameObject {
 
         image = ResourceLoader.loadImage("test-ship.png");
         movingDirection = Vector2D.getVector(1, 1);
-        type = GameObjectType.PLAYER;
+        type = EntityType.PLAYER;
     }
 
     @Override
@@ -36,10 +38,6 @@ public class Player extends GameObject {
         }
 
         move();
-//        if (mousePosition != null) {
-//            x = mousePosition.x;
-//            y = mousePosition.y;
-//        }
     }
 
     @Override
@@ -53,5 +51,10 @@ public class Player extends GameObject {
         g.drawRect(x - width / 2, y - height / 2, width, height);
         g.drawLine(x, y, (int) (x + resultantForce.getX() * 10), (int) (y + resultantForce.getY() * 10));
         g.setColor(Color.WHITE);
+    }
+
+    @Override
+    public List<ReflectingLine> getReflectingLines() {
+        return null;
     }
 }

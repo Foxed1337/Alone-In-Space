@@ -15,7 +15,7 @@ public class GameMap {
     private int bottomBorder;
 
 
-    public GameMap(int width, int height, int leftBorder, int rightBorder, int topBorder, int bottomBorder) {
+    private GameMap(int width, int height, int leftBorder, int rightBorder, int topBorder, int bottomBorder) {
         this.width = width;
         this.height = height;
         this.leftBorder = leftBorder;
@@ -24,7 +24,7 @@ public class GameMap {
         this.bottomBorder = bottomBorder;
     }
 
-    public static GameMap getInstance(int width, int height, int screenWidth, int screenHeight) {
+    public static GameMap getMap(int width, int height, int screenWidth, int screenHeight) {
         if (width < screenWidth || height < screenHeight)
             throw new IllegalArgumentException("Map size can't be less than screen size");
 
