@@ -6,6 +6,7 @@ import ru.zenkov.display.DisplayParams;
 import ru.zenkov.utils.Time;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.concurrent.Callable;
 
 
@@ -22,6 +23,7 @@ public class Game implements Runnable, Callable<Void> {
     private final Graphics2D displayGraphics;
     private final Input input;
     private Level level;
+    private boolean isLevelUpdate = false;
 
     public Game() {
         input = Input.getInstance();
@@ -36,6 +38,10 @@ public class Game implements Runnable, Callable<Void> {
                 .withMultiBuffering(3);
         Display.create(dp);
         displayGraphics = Display.getGraphics();
+        level = new Level(Display.getSize().width, Display.getSize().height);
+    }
+
+    private void recreateLevel() {
         level = new Level(Display.getSize().width, Display.getSize().height);
     }
 
@@ -69,6 +75,13 @@ public class Game implements Runnable, Callable<Void> {
 
     //расчеты
     private void update() {
+        if (input.getKey(KeyEvent.VK_SPACE) && !isLevelUpdate) {
+            recreateLevel();
+            isLevelUpdate = true;
+        } else if (!input.getKey(KeyEvent.VK_SPACE)) {
+            isLevelUpdate = false;
+        }
+
         level.checkCollision();
         level.update(input, Display.getMousePosition());
         level.rayCast(Display.getMousePosition());
@@ -84,6 +97,7 @@ public class Game implements Runnable, Callable<Void> {
     @Override
     public void run() {
 
+
         int fps = 0;
         int upd = 0;
         int updl = 0;
@@ -95,6 +109,7 @@ public class Game implements Runnable, Callable<Void> {
 
         long lastTime = Time.get();
         while (running) {
+
             long now = Time.get();
             long elapsedTime = now - lastTime;
             lastTime = now;

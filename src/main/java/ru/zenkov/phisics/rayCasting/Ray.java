@@ -1,6 +1,6 @@
 package ru.zenkov.phisics.rayCasting;
 
-import ru.zenkov.game.entity.Player;
+import ru.zenkov.game.entity.Entity;
 import ru.zenkov.phisics.Vector2D;
 
 import java.awt.*;
@@ -12,20 +12,22 @@ public class Ray {
     private double x2;
     private double y2;
 
+    private Object curObj;
+
     public Ray(Vector2D dir) {
         this.direction = dir;
     }
 
-    public Vector2D cast(Player player, ReflectingLine reflectingLine) {
+    public Vector2D cast(Entity entity, ReflectingLine reflectingLine) {
         double x1 = reflectingLine.getPt1().getX();
         double y1 = reflectingLine.getPt1().getY();
         double x2 = reflectingLine.getPt2().getX();
         double y2 = reflectingLine.getPt2().getY();
 
-        double x3 = player.getX();
-        double y3 = player.getY();
-        double x4 = player.getX() + direction.getX();
-        double y4 = player.getY() + direction.getY();
+        double x3 = entity.getX();
+        double y3 = entity.getY();
+        double x4 = entity.getX() + direction.getX();
+        double y4 = entity.getY() + direction.getY();
 
         double den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
         if (den == 0) {
@@ -46,6 +48,14 @@ public class Ray {
     public void render(Graphics2D g) {
 
         g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
+    }
+
+    public Object getCurObj() {
+        return curObj;
+    }
+
+    public void setCurObj(Object curObj) {
+        this.curObj = curObj;
     }
 
     public Vector2D getDirection() {

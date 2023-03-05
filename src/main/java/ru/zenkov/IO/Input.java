@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class Input extends JComponent {
 
-    private boolean[] map;
+    private final boolean[] map;
 
     private static Input instance;
 

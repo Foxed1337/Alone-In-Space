@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class Level {
@@ -20,6 +21,7 @@ public class Level {
     private final RayCasting rayCasting;
     private final GameMap gameMap;
     private final List<Entity> entities;
+    private final Camera camera;
 
     public Level(int screenWidth, int screenHeight) {
         entities = new ArrayList<>();
@@ -27,32 +29,14 @@ public class Level {
         EntityManager.setGameMap(gameMap);
         Entity player = EntityManager.get(EntityType.PLAYER);
         entities.add(player);
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
-        entities.add(EntityManager.get(EntityType.ROCK));
 
+        for (int i = 0; i < 25; i++) {
+            entities.add(EntityManager.get(EntityType.ROCK));
+        }
 
-        rayCasting = new RayCasting(1, (Player) player);
+        rayCasting = new RayCasting(player);
 
-
-        Camera.init(screenWidth, screenHeight, 10, 10, (Player) player);
-
-
+        camera = Camera.getCamera(screenWidth, screenHeight, 10, 10, (Player) player);
     }
 
     public void checkCollision() {
@@ -69,36 +53,35 @@ public class Level {
 
     public void update(Input input, Point mousePosition) {
 
-        entities.forEach(gameObject -> {
-            gameObject.update(input, mousePosition);
+        entities.forEach(entity -> {
+            entity.update(input, mousePosition);
             if (!Collision.areIntersectedRect(
-                    gameMap.getLeftBorder() + gameObject.getWidth(),
-                    gameMap.getRightBorder() - gameObject.getWidth(),
-                    gameMap.getTopBorder() + gameObject.getHeight(),
-                    gameMap.getBottomBorder() - gameObject.getHeight(),
-                    gameObject)) {
+                    gameMap.getLeftBorder() + entity.getWidth(),
+                    gameMap.getRightBorder() - entity.getWidth(),
+                    gameMap.getTopBorder() + entity.getHeight(),
+                    gameMap.getBottomBorder() - entity.getHeight(),
+                    entity)) {
 
-                if (gameObject.getLeft() <= gameMap.getLeftBorder()) {
-                    gameObject.setX(gameMap.getLeftBorder() + (gameObject.getWidth() / 2));
-                    gameObject.setResultantForce(Vector2D.getReflection(GameMap.LEFT_NORMAL, gameObject.getResultantForce()));
+                if (entity.getLeft() <= gameMap.getLeftBorder()) {
+                    entity.setX(gameMap.getLeftBorder() + (entity.getWidth() / 2));
+                    entity.setResultantForce(Vector2D.getReflection(GameMap.LEFT_NORMAL, entity.getResultantForce()));
                 }
-                if (gameObject.getRight() >= gameMap.getRightBorder()) {
-                    gameObject.setX(gameMap.getRightBorder() - (gameObject.getWidth() / 2));
-                    gameObject.setResultantForce(Vector2D.getReflection(GameMap.RIGHT_NORMAL, gameObject.getResultantForce()));
+                if (entity.getRight() >= gameMap.getRightBorder()) {
+                    entity.setX(gameMap.getRightBorder() - (entity.getWidth() / 2));
+                    entity.setResultantForce(Vector2D.getReflection(GameMap.RIGHT_NORMAL, entity.getResultantForce()));
                 }
-                if (gameObject.getTop() <= gameMap.getTopBorder()) {
-                    gameObject.setY(gameMap.getTopBorder() + (gameObject.getHeight() / 2));
-                    gameObject.setResultantForce(Vector2D.getReflection(GameMap.TOP_NORMAL, gameObject.getResultantForce()));
+                if (entity.getTop() <= gameMap.getTopBorder()) {
+                    entity.setY(gameMap.getTopBorder() + (entity.getHeight() / 2));
+                    entity.setResultantForce(Vector2D.getReflection(GameMap.TOP_NORMAL, entity.getResultantForce()));
                 }
-                if (gameObject.getBottom() >= gameMap.getBottomBorder()) {
-                    gameObject.setY(gameMap.getBottomBorder() - (gameObject.getHeight() / 2));
-                    gameObject.setResultantForce(Vector2D.getReflection(GameMap.BOTTOM_NORMAL, gameObject.getResultantForce()));
+                if (entity.getBottom() >= gameMap.getBottomBorder()) {
+                    entity.setY(gameMap.getBottomBorder() - (entity.getHeight() / 2));
+                    entity.setResultantForce(Vector2D.getReflection(GameMap.BOTTOM_NORMAL, entity.getResultantForce()));
                 }
-
             }
         });
 
-        Camera.update(entities, gameMap);
+        camera.update(entities, gameMap);
     }
 
     public void render(Graphics2D g) {
@@ -106,24 +89,19 @@ public class Level {
         entities.forEach(gameObject -> gameObject.render(g));
         g.setStroke(new BasicStroke(0.3f));
         rayCasting.render(g);
-        g.setStroke(new BasicStroke(20));
-        g.setColor(new Color(0x800080));
-        Camera.render(g);
-      //  g.drawRect(gameMap.getLeftBorder(), gameMap.getTopBorder(), gameMap.getWidth(), gameMap.getHeight());
+
+        camera.render(g);
     }
 
     public void rayCast(Point mousePosition) {
-        var a = entities
-                .stream()
-                .filter(go -> go.type == EntityType.ROCK)
-                .map(Entity::getReflectingLines)
-                .flatMap(Collection::stream)
+        List<ReflectingLine> refLines = Stream.concat(entities
+                                .stream()
+                                .filter(go -> go.type != EntityType.PLAYER)
+                                .map(Entity::getReflectingLines)
+                                .flatMap(Collection::stream)
+                        , gameMap.getReflectingLines().stream())
                 .collect(Collectors.toList());
-        a.add(ReflectingLine.getReflectingLine(gameMap.getLeftBorder() + 10, gameMap.getTopBorder() + 10, gameMap.getRightBorder() - 10, gameMap.getTopBorder() + 10));
-        a.add(ReflectingLine.getReflectingLine(gameMap.getLeftBorder() + 10, gameMap.getBottomBorder() - 10, gameMap.getRightBorder() - 10, gameMap.getBottomBorder() - 10));
-        a.add(ReflectingLine.getReflectingLine(gameMap.getLeftBorder() + 10, gameMap.getTopBorder() + 10, gameMap.getLeftBorder() + 10, gameMap.getBottomBorder() - 10));
-        a.add(ReflectingLine.getReflectingLine(gameMap.getRightBorder() - 10, gameMap.getTopBorder() + 10, gameMap.getRightBorder() - 10, gameMap.getBottomBorder() - 10));
-        rayCasting.castRays(a, mousePosition);
+        rayCasting.castRays(refLines, mousePosition);
     }
 }
 

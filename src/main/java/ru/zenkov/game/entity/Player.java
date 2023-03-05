@@ -16,7 +16,7 @@ public class Player extends Entity {
     private final BufferedImage image;
     protected Vector2D movingDirection;
 
-    public Player(int x, int y, double mass, int width, int height, double speed, Vector2D resultantForce) {
+    protected Player(int x, int y, double mass, int width, int height, double speed, Vector2D resultantForce) {
         super(x, y, mass, width, height, speed, resultantForce);
 
         image = ResourceLoader.loadImage("test-ship.png");
@@ -43,14 +43,14 @@ public class Player extends Entity {
     @Override
     public void render(Graphics2D g) {
 
-        double rotationRequired = Math.atan2(movingDirection.getY(), movingDirection.getX()) + (Math.PI / 2);
-        AffineTransform tx = AffineTransform.getTranslateInstance(x - width / 2f, y - height / 2f);
-        tx.rotate(rotationRequired, width / 2f, height / 2f);
-        g.drawImage(image, tx, null);
-        g.setColor(Color.RED);
-        g.drawRect(x - width / 2, y - height / 2, width, height);
-        g.drawLine(x, y, (int) (x + resultantForce.getX() * 10), (int) (y + resultantForce.getY() * 10));
-        g.setColor(Color.WHITE);
+//        double rotationRequired = Math.atan2(movingDirection.getY(), movingDirection.getX()) + (Math.PI / 2);
+//        AffineTransform tx = AffineTransform.getTranslateInstance(x - width / 2f, y - height / 2f);
+//        tx.rotate(rotationRequired, width / 2f, height / 2f);
+//        g.drawImage(image, tx, null);
+//        g.setColor(Color.RED);
+//        g.drawRect(x - width / 2, y - height / 2, width, height);
+//        g.drawLine(x, y, (int) (x + resultantForce.getX() * 10), (int) (y + resultantForce.getY() * 10));
+//        g.setColor(Color.WHITE);
     }
 
     @Override

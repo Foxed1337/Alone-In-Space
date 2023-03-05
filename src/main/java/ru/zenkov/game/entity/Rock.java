@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Rock extends Entity {
 
-    public Rock(int x, int y, double mass, int width, int height, double speed, Vector2D resultantForce) {
+    protected Rock(int x, int y, double mass, int width, int height, double speed, Vector2D resultantForce) {
         super(x, y, mass, width, height, speed, resultantForce);
         type = EntityType.ROCK;
     }
@@ -28,10 +28,10 @@ public class Rock extends Entity {
     @Override
     public List<ReflectingLine> getReflectingLines() {
         List<ReflectingLine> reflectingLines = new ArrayList<>();
-        reflectingLines.add(ReflectingLine.getReflectingLine(getLeft(), getTop(), getRight(), getTop()));
-        reflectingLines.add(ReflectingLine.getReflectingLine(getRight(), getTop(), getRight(), getBottom()));
-        reflectingLines.add(ReflectingLine.getReflectingLine(getLeft(), getBottom(), getRight(), getBottom()));
-        reflectingLines.add(ReflectingLine.getReflectingLine(getLeft(), getTop(), getLeft(), getBottom()));
+        reflectingLines.add(ReflectingLine.getReflectingLine(getLeft(), getTop(), getRight(), getTop(), this));
+        reflectingLines.add(ReflectingLine.getReflectingLine(getRight(), getTop(), getRight(), getBottom(), this));
+        reflectingLines.add(ReflectingLine.getReflectingLine(getLeft(), getBottom(), getRight(), getBottom(), this));
+        reflectingLines.add(ReflectingLine.getReflectingLine(getLeft(), getTop(), getLeft(), getBottom(), this));
         return reflectingLines;
     }
 }

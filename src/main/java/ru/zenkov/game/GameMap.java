@@ -1,6 +1,10 @@
 package ru.zenkov.game;
 
 import ru.zenkov.phisics.Vector2D;
+import ru.zenkov.phisics.rayCasting.ReflectingLine;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameMap {
     public static final Vector2D LEFT_NORMAL = Vector2D.getVector(-1, 0);
@@ -35,8 +39,24 @@ public class GameMap {
         int topBorder = -borderY;
         int bottomBorder = screenHeight + borderY;
 
+        System.out.printf("LEFT BORDER - %s\n", leftBorder);
+        System.out.printf("RIGHT BORDER - %s\n", rightBorder);
+        System.out.printf("TOP BORDER - %s\n", topBorder);
+        System.out.printf("BOTTOM BORDER - %s\n", bottomBorder);
+
         return new GameMap(width, height, leftBorder, rightBorder, topBorder, bottomBorder);
     }
+
+    public List<ReflectingLine> getReflectingLines() {
+        List<ReflectingLine> res = new ArrayList<>();
+        res.add(ReflectingLine.getReflectingLine(getLeftBorder() + 10, getTopBorder() + 10, getRightBorder() - 10, getTopBorder() + 10, this));
+        res.add(ReflectingLine.getReflectingLine(getLeftBorder() + 10, getBottomBorder() - 10, getRightBorder() - 10, getBottomBorder() - 10, this));
+        res.add(ReflectingLine.getReflectingLine(getLeftBorder() + 10, getTopBorder() + 10, getLeftBorder() + 10, getBottomBorder() - 10, this));
+        res.add(ReflectingLine.getReflectingLine(getRightBorder() - 10, getTopBorder() + 10, getRightBorder() - 10, getBottomBorder() - 10, this));
+
+        return res;
+    }
+
 
     public int getWidth() {
         return width;
