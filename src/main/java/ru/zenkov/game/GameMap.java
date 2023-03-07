@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameMap {
-    public static final Vector2D LEFT_NORMAL = Vector2D.getVector(-1, 0);
-    public static final Vector2D RIGHT_NORMAL = Vector2D.getVector(1, 0);
-    public static final Vector2D TOP_NORMAL = Vector2D.getVector(0, 1);
-    public static final Vector2D BOTTOM_NORMAL = Vector2D.getVector(0, -1);
+    private static final int BORDER_OFFSET = 5;
+    public static final Vector2D LEFT_NORMAL = Vector2D.newVector(-1, 0);
+    public static final Vector2D RIGHT_NORMAL = Vector2D.newVector(1, 0);
+    public static final Vector2D TOP_NORMAL = Vector2D.newVector(0, 1);
+    public static final Vector2D BOTTOM_NORMAL = Vector2D.newVector(0, -1);
     private final int width;
     private final int height;
     private int leftBorder;
@@ -28,7 +29,7 @@ public class GameMap {
         this.bottomBorder = bottomBorder;
     }
 
-    public static GameMap getMap(int width, int height, int screenWidth, int screenHeight) {
+    public static GameMap newGameMap(int width, int height, int screenWidth, int screenHeight) {
         if (width < screenWidth || height < screenHeight)
             throw new IllegalArgumentException("Map size can't be less than screen size");
 
@@ -39,20 +40,16 @@ public class GameMap {
         int topBorder = -borderY;
         int bottomBorder = screenHeight + borderY;
 
-        System.out.printf("LEFT BORDER - %s\n", leftBorder);
-        System.out.printf("RIGHT BORDER - %s\n", rightBorder);
-        System.out.printf("TOP BORDER - %s\n", topBorder);
-        System.out.printf("BOTTOM BORDER - %s\n", bottomBorder);
 
         return new GameMap(width, height, leftBorder, rightBorder, topBorder, bottomBorder);
     }
 
     public List<ReflectingLine> getReflectingLines() {
         List<ReflectingLine> res = new ArrayList<>();
-        res.add(ReflectingLine.getReflectingLine(getLeftBorder() + 10, getTopBorder() + 10, getRightBorder() - 10, getTopBorder() + 10, this));
-        res.add(ReflectingLine.getReflectingLine(getLeftBorder() + 10, getBottomBorder() - 10, getRightBorder() - 10, getBottomBorder() - 10, this));
-        res.add(ReflectingLine.getReflectingLine(getLeftBorder() + 10, getTopBorder() + 10, getLeftBorder() + 10, getBottomBorder() - 10, this));
-        res.add(ReflectingLine.getReflectingLine(getRightBorder() - 10, getTopBorder() + 10, getRightBorder() - 10, getBottomBorder() - 10, this));
+        res.add(ReflectingLine.getReflectingLine(getLeftBorder() + BORDER_OFFSET, getTopBorder() + BORDER_OFFSET, getRightBorder() - BORDER_OFFSET, getTopBorder() + BORDER_OFFSET, this));
+        res.add(ReflectingLine.getReflectingLine(getLeftBorder() + BORDER_OFFSET, getBottomBorder() - BORDER_OFFSET, getRightBorder() - BORDER_OFFSET, getBottomBorder() - BORDER_OFFSET, this));
+        res.add(ReflectingLine.getReflectingLine(getLeftBorder() + BORDER_OFFSET, getTopBorder() + BORDER_OFFSET, getLeftBorder() + BORDER_OFFSET, getBottomBorder() - BORDER_OFFSET, this));
+        res.add(ReflectingLine.getReflectingLine(getRightBorder() - BORDER_OFFSET, getTopBorder() + BORDER_OFFSET, getRightBorder() - BORDER_OFFSET, getBottomBorder() - BORDER_OFFSET, this));
 
         return res;
     }

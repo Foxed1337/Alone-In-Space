@@ -7,14 +7,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityManager {
 
-    private static Player player;
     private static GameMap gameMap;
 
     public static void setGameMap(GameMap gm) {
         gameMap = gm;
     }
 
-    public static Entity get(EntityType entityType) {
+    public static Entity getNew(EntityType entityType) {
         //TODO Сделать кастомный эксепшен
         if (gameMap == null) throw new IllegalArgumentException("Game map is not set");
         switch (entityType) {
@@ -28,17 +27,14 @@ public class EntityManager {
 
 
     private static Player getPlayer() {
-        if (player == null) {
-            player = new Player((gameMap.getWidth() + 2 * gameMap.getLeftBorder()) / 2,
-                    (gameMap.getHeight() + 2 * gameMap.getTopBorder()) / 2,
-                    25,
-                    32,
-                    32,
-                    20,
-                    Vector2D.getVector(0, 0));
-        }
-        System.out.printf("Player coords x - %s y - %s\n", player.getX(), player.getY());
-        return player;
+        return new Player((gameMap.getWidth() + 2 * gameMap.getLeftBorder()) / 2,
+                (gameMap.getHeight() + 2 * gameMap.getTopBorder()) / 2,
+                25,
+                10,
+                10,
+                20,
+                Vector2D.newVector(0, 0));
+
     }
 
     private static Rock getRock() {
@@ -67,6 +63,6 @@ public class EntityManager {
         double forceX = forceMod * Math.cos(forceAngle);
         double forceY = forceMod * Math.sin(forceAngle);
 
-        return new Rock(x, y, mass, size, size, 0, Vector2D.getVector(forceX, forceY));
+        return new Rock(x, y, mass, size, size, 0, Vector2D.newVector(forceX, forceY));
     }
 }

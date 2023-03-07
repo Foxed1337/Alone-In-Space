@@ -18,29 +18,46 @@ import java.util.stream.Stream;
 
 public class Level {
 
-    private final RayCasting rayCasting;
     private final GameMap gameMap;
     private final List<Entity> entities;
     private final Camera camera;
+    private final RayCasting rayCasting;
+
 
     public Level(int screenWidth, int screenHeight) {
         entities = new ArrayList<>();
-        this.gameMap = GameMap.getMap(2000, 2000, screenWidth, screenHeight);
+        this.gameMap = GameMap.newGameMap(1500, 1500, screenWidth, screenHeight);
+        //TODO getEntities
         EntityManager.setGameMap(gameMap);
-        Entity player = EntityManager.get(EntityType.PLAYER);
+        Entity player = EntityManager.getNew(EntityType.PLAYER);
         entities.add(player);
 
-        for (int i = 0; i < 25; i++) {
-            entities.add(EntityManager.get(EntityType.ROCK));
+        for (int i = 0; i < 150; i++) {
+            entities.add(EntityManager.getNew(EntityType.ROCK));
         }
-
-        rayCasting = new RayCasting(player);
-
-        camera = Camera.getCamera(screenWidth, screenHeight, 10, 10, (Player) player);
+        rayCasting = RayCasting.newRayCasting(player, 300);
+        camera = Camera.newCamera(screenWidth, screenHeight, 10, 10, (Player) player);
     }
 
-    public void checkCollision() {
 
+    public void update(Input input, Point mousePosition) {
+        checkCollision();
+        checkOutOfBorder();
+        entities.forEach(entity -> entity.update(input, mousePosition));
+        rayCast();
+        camera.update(entities, gameMap);
+    }
+
+    public void render(Graphics2D g) {
+
+        g.setStroke(new BasicStroke(0.5f));
+        entities.forEach(gameObject -> gameObject.render(g));
+        g.setStroke(new BasicStroke(0.3f));
+        rayCasting.render(g);
+        camera.render(g);
+    }
+
+    private void checkCollision() {
         for (int i = 0; i < entities.size(); i++) {
             for (int j = i + 1; j < entities.size(); j++) {
                 if (Collision.areIntersectedCircle(entities.get(i), entities.get(j))) {
@@ -50,11 +67,8 @@ public class Level {
         }
     }
 
-
-    public void update(Input input, Point mousePosition) {
-
+    private void checkOutOfBorder() {
         entities.forEach(entity -> {
-            entity.update(input, mousePosition);
             if (!Collision.areIntersectedRect(
                     gameMap.getLeftBorder() + entity.getWidth(),
                     gameMap.getRightBorder() - entity.getWidth(),
@@ -80,20 +94,9 @@ public class Level {
                 }
             }
         });
-
-        camera.update(entities, gameMap);
     }
 
-    public void render(Graphics2D g) {
-        g.setStroke(new BasicStroke(0.5f));
-        entities.forEach(gameObject -> gameObject.render(g));
-        g.setStroke(new BasicStroke(0.3f));
-        rayCasting.render(g);
-
-        camera.render(g);
-    }
-
-    public void rayCast(Point mousePosition) {
+    private void rayCast() {
         List<ReflectingLine> refLines = Stream.concat(entities
                                 .stream()
                                 .filter(go -> go.type != EntityType.PLAYER)
@@ -101,7 +104,7 @@ public class Level {
                                 .flatMap(Collection::stream)
                         , gameMap.getReflectingLines().stream())
                 .collect(Collectors.toList());
-        rayCasting.castRays(refLines, mousePosition);
+        rayCasting.castRays(refLines);
     }
 }
 

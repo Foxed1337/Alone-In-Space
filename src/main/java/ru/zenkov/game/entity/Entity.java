@@ -32,7 +32,7 @@ public abstract class Entity {
         this.height = height;
         this.speed = speed;
         this.resultantForce = resultantForce;
-        this.acceleration = Vector2D.getVector(0, 0);
+        this.acceleration = Vector2D.newVector(0, 0);
     }
 
     public abstract void update(Input input, Point mousePosition);
@@ -69,7 +69,7 @@ public abstract class Entity {
                 ? 0
                 : resultantForce.getY() + resistanceForce.getY();
 
-        return Vector2D.getVector(newX, newY);
+        return Vector2D.newVector(newX, newY);
     }
 
     public int getLeft() {

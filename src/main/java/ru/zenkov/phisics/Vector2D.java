@@ -13,7 +13,7 @@ public class Vector2D {
         this.y = y;
     }
 
-    public static Vector2D getVector(double x, double y) {
+    public static Vector2D newVector(double x, double y) {
         return new Vector2D(x, y);
     }
 
@@ -32,11 +32,11 @@ public class Vector2D {
     }
 
     public static Vector2D multiplyConst(Vector2D v, double c) {
-        return getVector(v.getX() * c, v.getY() * c);
+        return newVector(v.getX() * c, v.getY() * c);
     }
 
     public static Vector2D divideConst(Vector2D v, double c) {
-        return getVector(division(v.getX(), c), division(v.getY(), c));
+        return newVector(division(v.getX(), c), division(v.getY(), c));
     }
 
     public static Vector2D rotate(Vector2D v, double angle) {
@@ -45,15 +45,15 @@ public class Vector2D {
         double sin = Math.sin(angle);
         double newX = (v.getX() * cos - v.getY() * sin);
         double newY = (v.getX() * sin + v.getY() * cos);
-        return getVector(newX, newY);
+        return newVector(newX, newY);
     }
 
     public static double getProjection(Vector2D v1, Vector2D v2) {
-        return getMod(v1) * Math.cos(getAngleBetween(v1, v2));
+        return getAbs(v1) * Math.cos(getAngleBetween(v1, v2));
     }
 
     public static double getAngleBetween(Vector2D v1, Vector2D v2) {
-        return Math.acos(division(getScalar(v1, v2), (getMod(v1) * getMod(v2))));
+        return Math.acos(division(getScalar(v1, v2), (getAbs(v1) * getAbs(v2))));
     }
 
     public static double getScalar(Vector2D v1, Vector2D v2) {
@@ -61,12 +61,12 @@ public class Vector2D {
     }
 
     public static Vector2D getUnitVector(Vector2D v) {
-        return divideConst(v, getMod(v));
+        return divideConst(v, getAbs(v));
     }
 
     public static Vector2D getUnitVector(double x, double y) {
-        double mod = getMod(x, y);
-        return divideConst(getVector(x, y), mod);
+        double mod = getAbs(x, y);
+        return divideConst(newVector(x, y), mod);
     }
 
     private static double division(double a, double b) {
@@ -77,16 +77,16 @@ public class Vector2D {
         return Math.floor(d * FRACTION_LENGTH) / FRACTION_LENGTH;
     }
 
-    public static double getMod(Vector2D v) {
+    public static double getAbs(Vector2D v) {
         return Math.sqrt(v.getX() * v.getX() + v.getY() * v.getY());
     }
 
-    public static double getMod(double x, double y) {
+    public static double getAbs(double x, double y) {
         return Math.sqrt(x * x + y * y);
     }
 
     public Vector2D invert() {
-        return Vector2D.getVector(-this.getX(), -this.getY());
+        return Vector2D.newVector(-this.getX(), -this.getY());
     }
 
     public double getX() {

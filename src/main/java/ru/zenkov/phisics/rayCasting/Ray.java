@@ -40,7 +40,7 @@ public class Ray {
         if (t > 0 && t < 1 && u > 0) {
             double x = x1 + t * (x2 - x1);
             double y = y1 + t * (y2 - y1);
-            return Vector2D.getVector(x, y);
+            return Vector2D.newVector(x, y);
         }
         return null;
     }

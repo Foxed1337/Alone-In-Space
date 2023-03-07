@@ -7,7 +7,6 @@ import ru.zenkov.utils.ResourceLoader;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class Player extends Entity {
         super(x, y, mass, width, height, speed, resultantForce);
 
         image = ResourceLoader.loadImage("test-ship.png");
-        movingDirection = Vector2D.getVector(1, 1);
+        movingDirection = Vector2D.newVector(1, 1);
         type = EntityType.PLAYER;
     }
 
@@ -30,7 +29,7 @@ public class Player extends Entity {
         if (mousePosition != null) {
             movingDirection = Vector2D.getForceDirection(mousePosition.getX(), mousePosition.getY(), x, y);
             if (input.getKey(KeyEvent.VK_W)) {
-                double currentSpeed = Vector2D.getMod(acceleration);
+                double currentSpeed = Vector2D.getAbs(acceleration);
                 currentSpeed = speed - currentSpeed;
                 Vector2D movingForce = Vector2D.multiplyConst(movingDirection, currentSpeed);
                 resultantForce = Vector2D.add(resultantForce, movingForce);

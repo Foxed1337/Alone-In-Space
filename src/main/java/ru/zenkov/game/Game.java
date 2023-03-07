@@ -82,9 +82,7 @@ public class Game implements Runnable, Callable<Void> {
             isLevelUpdate = false;
         }
 
-        level.checkCollision();
         level.update(input, Display.getMousePosition());
-        level.rayCast(Display.getMousePosition());
     }
 
     //рисуем полсе render
@@ -96,7 +94,6 @@ public class Game implements Runnable, Callable<Void> {
 
     @Override
     public void run() {
-
 
         int fps = 0;
         int upd = 0;

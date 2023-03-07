@@ -15,7 +15,7 @@ public class ReflectingLine {
     }
 
     public static ReflectingLine getReflectingLine(double x1, double y1, double x2, double y2, Object curObj) {
-        return new ReflectingLine(Vector2D.getVector(x1, y1), Vector2D.getVector(x2, y2), curObj);
+        return new ReflectingLine(Vector2D.newVector(x1, y1), Vector2D.newVector(x2, y2), curObj);
     }
 
     public Vector2D getPt1() {

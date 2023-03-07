@@ -1,7 +1,6 @@
 package ru.zenkov.game;
 
 import ru.zenkov.game.entity.Entity;
-import ru.zenkov.game.entity.Player;
 import ru.zenkov.phisics.Vector2D;
 
 import java.awt.*;
@@ -17,7 +16,7 @@ public class Camera {
     private final Entity player;
 
 
-    public static Camera getCamera(int screenWidth, int screenHeight, int distanceForStartMoving, int speed, Entity entity) {
+    public static Camera newCamera(int screenWidth, int screenHeight, int distanceForStartMoving, int speed, Entity entity) {
         int xRelativelyScreen = screenWidth / 2;
         int yRelativelyScreen = screenHeight / 2;
 
@@ -42,7 +41,7 @@ public class Camera {
         boolean canChangeX = false;
         boolean canChangeY = false;
 
-        double s = Vector2D.getMod(dx, dy);
+        double s = Vector2D.getAbs(dx, dy);
         Vector2D dir = Vector2D.getUnitVector(dx, dy);
 
         int dx2 = (int) (s / speed * dir.getX());

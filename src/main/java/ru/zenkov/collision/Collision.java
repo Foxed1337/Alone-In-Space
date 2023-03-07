@@ -9,7 +9,7 @@ public class Collision {
         Vector2D dirActForceObj1 = Vector2D.getUnitVector(Vector2D.getForceDirection(go1.getX(), go1.getY(), go2.getX(), go2.getY()));
         Vector2D dirActForceObj2 = dirActForceObj1.invert();
 
-        double dist = ((go1.getWidth() + go2.getWidth()) / 2f - Vector2D.getMod(go1.getX() - go2.getX(), go1.getY() - go2.getY()));
+        double dist = ((go1.getWidth() + go2.getWidth()) / 2f - Vector2D.getAbs(go1.getX() - go2.getX(), go1.getY() - go2.getY()));
 
         Vector2D dist1 = Vector2D.multiplyConst(dirActForceObj1, dist);
         Vector2D dist2 = Vector2D.multiplyConst(dirActForceObj2, dist);
@@ -39,7 +39,7 @@ public class Collision {
     }
 
     public static boolean areIntersectedCircle(Entity go1, Entity go2) {
-        double d = Vector2D.getMod(go1.getX() - go2.getX(), go1.getY() - go2.getY());
+        double d = Vector2D.getAbs(go1.getX() - go2.getX(), go1.getY() - go2.getY());
         return (go1.getWidth() + go2.getWidth()) / 2f >= d;
     }
 

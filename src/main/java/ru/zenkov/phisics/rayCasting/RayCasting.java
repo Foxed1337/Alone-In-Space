@@ -10,20 +10,26 @@ import java.util.List;
 public class RayCasting {
     private final List<Ray> rays;
     private final Entity entity;
-    private final int maxRayRange = 300;
+    private final int maxRayRange;
 
-
-    public RayCasting(Entity entity) {
-        this.entity = entity;
-        rays = new ArrayList<>();
+    public static RayCasting newRayCasting(Entity entity, int maxRayRange) {
+        List<Ray> rays = new ArrayList<>();
         for (int i = 0; i <= 359; i += 2) {
             double x = Math.cos(Math.toRadians(i));
             double y = Math.sin(Math.toRadians(i));
-            rays.add(new Ray(Vector2D.getVector(x, y)));
+            rays.add(new Ray(Vector2D.newVector(x, y)));
         }
+
+        return new RayCasting(entity, rays, maxRayRange);
     }
 
-    public void castRays(List<ReflectingLine> reflectingLines, Point mousePosition) {
+    private RayCasting(Entity entity, List<Ray> rays, int maxRayRange) {
+        this.entity = entity;
+        this.rays = rays;
+        this.maxRayRange = maxRayRange;
+    }
+
+    public void castRays(List<ReflectingLine> reflectingLines) {
 
         for (Ray ray : rays) {
             Vector2D closest = null;
@@ -31,10 +37,11 @@ public class RayCasting {
             double record = Double.POSITIVE_INFINITY;
             ray.setX1(entity.getX());
             ray.setY1(entity.getY());
+
             for (ReflectingLine reflectingLine : reflectingLines) {
                 Vector2D pt = ray.cast(entity, reflectingLine);
                 if (pt != null) {
-                    double d = Vector2D.getMod(pt.getX() - ray.getX1(), pt.getY() - ray.getY1());
+                    double d = Vector2D.getAbs(pt.getX() - ray.getX1(), pt.getY() - ray.getY1());
                     if (d < record) {
                         record = d;
                         closest = pt;
@@ -42,7 +49,7 @@ public class RayCasting {
                     }
                 }
             }
-            if (closest != null && (Vector2D.getMod(closest.getX() - ray.getX1(), closest.getY() - ray.getY1()) < maxRayRange)) {
+            if (closest != null && (Vector2D.getAbs(closest.getX() - ray.getX1(), closest.getY() - ray.getY1()) < maxRayRange)) {
                 ray.setX2(closest.getX());
                 ray.setY2(closest.getY());
                 ray.setCurObj(line.getCurObj());
@@ -57,13 +64,18 @@ public class RayCasting {
 
     public void render(Graphics2D g) {
         rays.forEach(ray -> ray.render(g));
+        renderReflectingLines(g);
+    }
+
+    private void renderReflectingLines(Graphics2D g) {
+
         g.setStroke(new BasicStroke(1));
 
         for (int i = 1; i <= rays.size(); i++) {
             Ray ray1 = rays.get((i - 1) % rays.size());
             Ray ray2 = rays.get(i % rays.size());
-            if ((Vector2D.getMod(ray1.getX1() - ray1.getX2(), ray1.getY1() - ray1.getY2()) < maxRayRange - 1)
-                    && (Vector2D.getMod(ray2.getX1() - ray2.getX2(), ray2.getY1() - ray2.getY2()) < maxRayRange - 1)
+            if ((Vector2D.getAbs(ray1.getX1() - ray1.getX2(), ray1.getY1() - ray1.getY2()) < maxRayRange - 1)
+                    && (Vector2D.getAbs(ray2.getX1() - ray2.getX2(), ray2.getY1() - ray2.getY2()) < maxRayRange - 1)
                     && ray1.getCurObj() != null
                     && ray2.getCurObj() != null
                     && ray1.getCurObj() == ray2.getCurObj()
@@ -71,9 +83,5 @@ public class RayCasting {
                 g.drawLine((int) ray1.getX2(), (int) ray1.getY2(), (int) ray2.getX2(), (int) ray2.getY2());
             }
         }
-    }
-
-    public List<Ray> getRays() {
-        return rays;
     }
 }
