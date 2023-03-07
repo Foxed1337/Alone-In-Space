@@ -3,6 +3,7 @@ package ru.zenkov.game;
 
 import ru.zenkov.IO.Input;
 import ru.zenkov.game.entity.*;
+import ru.zenkov.phisics.Interacting;
 import ru.zenkov.phisics.rayCasting.RayCasting;
 import ru.zenkov.phisics.Vector2D;
 import ru.zenkov.collision.Collision;
@@ -26,13 +27,13 @@ public class Level {
 
     public Level(int screenWidth, int screenHeight) {
         entities = new ArrayList<>();
-        this.gameMap = GameMap.newGameMap(1500, 1500, screenWidth, screenHeight);
+        this.gameMap = GameMap.newGameMap(10000, 10000, screenWidth, screenHeight);
         //TODO getEntities
         EntityManager.setGameMap(gameMap);
         Entity player = EntityManager.getNew(EntityType.PLAYER);
         entities.add(player);
 
-        for (int i = 0; i < 150; i++) {
+        for (int i = 0; i < 2000; i++) {
             entities.add(EntityManager.getNew(EntityType.ROCK));
         }
         rayCasting = RayCasting.newRayCasting(player, 300);
@@ -61,7 +62,7 @@ public class Level {
         for (int i = 0; i < entities.size(); i++) {
             for (int j = i + 1; j < entities.size(); j++) {
                 if (Collision.areIntersectedCircle(entities.get(i), entities.get(j))) {
-                    Collision.interact(entities.get(i), entities.get(j));
+                    Interacting.interact(entities.get(i), entities.get(j));
                 }
             }
         }

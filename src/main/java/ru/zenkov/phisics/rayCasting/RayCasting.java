@@ -1,11 +1,13 @@
 package ru.zenkov.phisics.rayCasting;
 
+import ru.zenkov.collision.Collision;
 import ru.zenkov.game.entity.Entity;
 import ru.zenkov.phisics.Vector2D;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RayCasting {
     private final List<Ray> rays;
@@ -31,6 +33,8 @@ public class RayCasting {
 
     public void castRays(List<ReflectingLine> reflectingLines) {
 
+        List<ReflectingLine> reflectingLinesInRayCastRange = getReflectingLineInRayCastRange(reflectingLines);
+
         for (Ray ray : rays) {
             Vector2D closest = null;
             ReflectingLine line = null;
@@ -38,7 +42,7 @@ public class RayCasting {
             ray.setX1(entity.getX());
             ray.setY1(entity.getY());
 
-            for (ReflectingLine reflectingLine : reflectingLines) {
+            for (ReflectingLine reflectingLine : reflectingLinesInRayCastRange) {
                 Vector2D pt = ray.cast(entity, reflectingLine);
                 if (pt != null) {
                     double d = Vector2D.getAbs(pt.getX() - ray.getX1(), pt.getY() - ray.getY1());
@@ -59,6 +63,31 @@ public class RayCasting {
                 ray.setCurObj(null);
             }
         }
+    }
+
+    private List<ReflectingLine> getReflectingLineInRayCastRange(List<ReflectingLine> reflectingLines) {
+        return reflectingLines.stream().filter(reflectingLine -> {
+
+            double lineCenterX = (reflectingLine.getPt1().getX() + reflectingLine.getPt2().getX()) / 2;
+            double lineCenterY = (reflectingLine.getPt1().getY() + reflectingLine.getPt2().getY()) / 2;
+
+            double width = Math.abs(reflectingLine.getPt1().getX() - reflectingLine.getPt2().getX());
+            double height = Math.abs(reflectingLine.getPt1().getY() - reflectingLine.getPt2().getY());
+
+            double lineLeft = lineCenterX - width;
+            double lineRight = lineCenterX + width;
+            double lineTop = lineCenterY - height;
+            double lineBottom = lineCenterY + height;
+
+            double entityRayCastLeft = entity.getX() - maxRayRange;
+            double entityRayCastRight = entity.getX() + maxRayRange;
+            double entityRayCastTop = entity.getY() - maxRayRange;
+            double entityRayCastBottom = entity.getY() + maxRayRange;
+
+            return Collision.areIntersectedRect(lineLeft, lineRight, lineTop, lineBottom,
+                    entityRayCastLeft, entityRayCastRight, entityRayCastTop, entityRayCastBottom);
+
+        }).collect(Collectors.toList());
     }
 
 
