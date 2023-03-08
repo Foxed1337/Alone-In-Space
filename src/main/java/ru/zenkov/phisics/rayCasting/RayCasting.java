@@ -1,18 +1,23 @@
 package ru.zenkov.phisics.rayCasting;
 
-import ru.zenkov.collision.Collision;
 import ru.zenkov.game.entity.Entity;
 import ru.zenkov.phisics.Vector2D;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RayCasting {
     private final List<Ray> rays;
     private final Entity entity;
     private final int maxRayRange;
+    private final int minRayRange;
+    private int rayRange;
+
+    private List<ReflectingLine> reflectingLines;
+
+    private long rayImpulseCounter;
+
 
     public static RayCasting newRayCasting(Entity entity, int maxRayRange) {
         List<Ray> rays = new ArrayList<>();
@@ -22,19 +27,21 @@ public class RayCasting {
             rays.add(new Ray(Vector2D.newVector(x, y)));
         }
 
-        return new RayCasting(entity, rays, maxRayRange);
+        return new RayCasting(entity, rays, maxRayRange, maxRayRange - 25);
     }
 
-    private RayCasting(Entity entity, List<Ray> rays, int maxRayRange) {
+    private RayCasting(Entity entity, List<Ray> rays, int maxRayRange, int minRayRange) {
         this.entity = entity;
         this.rays = rays;
         this.maxRayRange = maxRayRange;
+        this.minRayRange = minRayRange;
     }
 
-    public void castRays(List<ReflectingLine> reflectingLines) {
 
-        List<ReflectingLine> reflectingLinesInRayCastRange = getReflectingLineInRayCastRange(reflectingLines);
-
+    public void castRays() {
+        rayImpulseCounter++;
+        //rayRange = (int) (minRayRange + (maxRayRange - minRayRange) * Math.sin((1 / 35f) * rayImpulseCounter));
+        rayRange = maxRayRange;
         for (Ray ray : rays) {
             Vector2D closest = null;
             ReflectingLine line = null;
@@ -42,7 +49,7 @@ public class RayCasting {
             ray.setX1(entity.getX());
             ray.setY1(entity.getY());
 
-            for (ReflectingLine reflectingLine : reflectingLinesInRayCastRange) {
+            for (ReflectingLine reflectingLine : reflectingLines) {
                 Vector2D pt = ray.cast(entity, reflectingLine);
                 if (pt != null) {
                     double d = Vector2D.getAbs(pt.getX() - ray.getX1(), pt.getY() - ray.getY1());
@@ -53,43 +60,17 @@ public class RayCasting {
                     }
                 }
             }
-            if (closest != null && (Vector2D.getAbs(closest.getX() - ray.getX1(), closest.getY() - ray.getY1()) < maxRayRange)) {
+            if (closest != null && (Vector2D.getAbs(closest.getX() - ray.getX1(), closest.getY() - ray.getY1()) < rayRange)) {
                 ray.setX2(closest.getX());
                 ray.setY2(closest.getY());
                 ray.setCurObj(line.getCurObj());
             } else {
-                ray.setX2(entity.getX() + ray.getDirection().getX() * maxRayRange);
-                ray.setY2(entity.getY() + ray.getDirection().getY() * maxRayRange);
+                ray.setX2(entity.getX() + ray.getDirection().getX() * rayRange);
+                ray.setY2(entity.getY() + ray.getDirection().getY() * rayRange);
                 ray.setCurObj(null);
             }
         }
     }
-
-    private List<ReflectingLine> getReflectingLineInRayCastRange(List<ReflectingLine> reflectingLines) {
-        return reflectingLines.stream().filter(reflectingLine -> {
-
-            double lineCenterX = (reflectingLine.getPt1().getX() + reflectingLine.getPt2().getX()) / 2;
-            double lineCenterY = (reflectingLine.getPt1().getY() + reflectingLine.getPt2().getY()) / 2;
-
-            double width = Math.abs(reflectingLine.getPt1().getX() - reflectingLine.getPt2().getX());
-            double height = Math.abs(reflectingLine.getPt1().getY() - reflectingLine.getPt2().getY());
-
-            double lineLeft = lineCenterX - width;
-            double lineRight = lineCenterX + width;
-            double lineTop = lineCenterY - height;
-            double lineBottom = lineCenterY + height;
-
-            double entityRayCastLeft = entity.getX() - maxRayRange;
-            double entityRayCastRight = entity.getX() + maxRayRange;
-            double entityRayCastTop = entity.getY() - maxRayRange;
-            double entityRayCastBottom = entity.getY() + maxRayRange;
-
-            return Collision.areIntersectedRect(lineLeft, lineRight, lineTop, lineBottom,
-                    entityRayCastLeft, entityRayCastRight, entityRayCastTop, entityRayCastBottom);
-
-        }).collect(Collectors.toList());
-    }
-
 
     public void render(Graphics2D g) {
         rays.forEach(ray -> ray.render(g));
@@ -103,8 +84,8 @@ public class RayCasting {
         for (int i = 1; i <= rays.size(); i++) {
             Ray ray1 = rays.get((i - 1) % rays.size());
             Ray ray2 = rays.get(i % rays.size());
-            if ((Vector2D.getAbs(ray1.getX1() - ray1.getX2(), ray1.getY1() - ray1.getY2()) < maxRayRange - 1)
-                    && (Vector2D.getAbs(ray2.getX1() - ray2.getX2(), ray2.getY1() - ray2.getY2()) < maxRayRange - 1)
+            if ((Vector2D.getAbs(ray1.getX1() - ray1.getX2(), ray1.getY1() - ray1.getY2()) < rayRange - 1)
+                    && (Vector2D.getAbs(ray2.getX1() - ray2.getX2(), ray2.getY1() - ray2.getY2()) < rayRange - 1)
                     && ray1.getCurObj() != null
                     && ray2.getCurObj() != null
                     && ray1.getCurObj() == ray2.getCurObj()
@@ -113,4 +94,25 @@ public class RayCasting {
             }
         }
     }
+
+    public void setReflectingLines(List<ReflectingLine> reflectingLines) {
+        this.reflectingLines = reflectingLines;
+    }
+
+    public int getLeft() {
+        return entity.getX() - rayRange;
+    }
+
+    public int getRight() {
+        return entity.getX() + rayRange;
+    }
+
+    public int getTop() {
+        return entity.getY() - rayRange;
+    }
+
+    public int getBottom() {
+        return entity.getY() + rayRange;
+    }
+
 }

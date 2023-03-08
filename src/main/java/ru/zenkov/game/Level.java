@@ -11,10 +11,7 @@ import ru.zenkov.phisics.rayCasting.ReflectingLine;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 public class Level {
@@ -27,24 +24,24 @@ public class Level {
 
     public Level(int screenWidth, int screenHeight) {
         entities = new ArrayList<>();
-        this.gameMap = GameMap.newGameMap(10000, 10000, screenWidth, screenHeight);
+        this.gameMap = GameMap.newGameMap(1000, 1000, screenWidth, screenHeight);
         //TODO getEntities
         EntityManager.setGameMap(gameMap);
         Entity player = EntityManager.getNew(EntityType.PLAYER);
         entities.add(player);
 
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 150; i++) {
             entities.add(EntityManager.getNew(EntityType.ROCK));
         }
         rayCasting = RayCasting.newRayCasting(player, 300);
-        camera = Camera.newCamera(screenWidth, screenHeight, 10, 10, (Player) player);
+        camera = Camera.newCamera(screenWidth, screenHeight, 10, 10, player);
     }
 
 
     public void update(Input input, Point mousePosition) {
+        entities.forEach(entity -> entity.update(input, mousePosition));
         checkCollision();
         checkOutOfBorder();
-        entities.forEach(entity -> entity.update(input, mousePosition));
         rayCast();
         camera.update(entities, gameMap);
     }
@@ -55,17 +52,24 @@ public class Level {
         entities.forEach(gameObject -> gameObject.render(g));
         g.setStroke(new BasicStroke(0.3f));
         rayCasting.render(g);
-        camera.render(g);
     }
 
     private void checkCollision() {
+        List<ReflectingLine> reflectingLines = new ArrayList<>();
         for (int i = 0; i < entities.size(); i++) {
+            if (Collision.areIntersectedRect(
+                    rayCasting.getLeft(), rayCasting.getRight(), rayCasting.getTop(), rayCasting.getBottom(), entities.get(i))
+                    && (entities.get(i).getType() != EntityType.PLAYER)) {
+                reflectingLines.addAll(entities.get(i).getReflectingLines());
+            }
             for (int j = i + 1; j < entities.size(); j++) {
                 if (Collision.areIntersectedCircle(entities.get(i), entities.get(j))) {
                     Interacting.interact(entities.get(i), entities.get(j));
                 }
             }
         }
+        reflectingLines.addAll(gameMap.getReflectingLines());
+        rayCasting.setReflectingLines(reflectingLines);
     }
 
     private void checkOutOfBorder() {
@@ -98,14 +102,7 @@ public class Level {
     }
 
     private void rayCast() {
-        List<ReflectingLine> refLines = Stream.concat(entities
-                                .stream()
-                                .filter(go -> go.type != EntityType.PLAYER)
-                                .map(Entity::getReflectingLines)
-                                .flatMap(Collection::stream)
-                        , gameMap.getReflectingLines().stream())
-                .collect(Collectors.toList());
-        rayCasting.castRays(refLines);
+        rayCasting.castRays();
     }
 }
 

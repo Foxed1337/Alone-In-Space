@@ -6,8 +6,8 @@ import ru.zenkov.phisics.Vector2D;
 public class Collision {
 
     public static boolean areIntersectedCircle(Entity go1, Entity go2) {
-        double d = Vector2D.getAbs(go1.getX() - go2.getX(), go1.getY() - go2.getY());
-        return (go1.getWidth() + go2.getWidth()) / 2f >= d;
+        return (go1.getWidth() + go2.getWidth()) / 2f
+                >= Vector2D.getAbs(go1.getX() - go2.getX(), go1.getY() - go2.getY());
     }
 
     public static boolean areIntersectedRect(Entity go1, Entity go2) {

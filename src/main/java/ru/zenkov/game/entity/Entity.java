@@ -159,4 +159,8 @@ public abstract class Entity {
     public int getHeight() {
         return height;
     }
+
+    public EntityType getType() {
+        return type;
+    }
 }
