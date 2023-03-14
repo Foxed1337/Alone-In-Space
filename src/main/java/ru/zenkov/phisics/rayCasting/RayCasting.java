@@ -6,20 +6,18 @@ import ru.zenkov.phisics.Vector2D;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RayCasting {
     private final List<Ray> rays;
     private final Entity entity;
-    private final int maxRayRange;
-    private final int minRayRange;
+
     private int rayRange;
 
     private List<ReflectingLine> reflectingLines;
 
-    private long rayImpulseCounter;
 
-
-    public static RayCasting newRayCasting(Entity entity, int maxRayRange) {
+    public static RayCasting newRayCasting(Entity entity, int rayRange) {
         List<Ray> rays = new ArrayList<>();
         for (int i = 0; i <= 359; i += 2) {
             double x = Math.cos(Math.toRadians(i));
@@ -27,21 +25,19 @@ public class RayCasting {
             rays.add(new Ray(Vector2D.newVector(x, y)));
         }
 
-        return new RayCasting(entity, rays, maxRayRange, maxRayRange - 25);
+        return new RayCasting(entity, rays, rayRange);
     }
 
-    private RayCasting(Entity entity, List<Ray> rays, int maxRayRange, int minRayRange) {
+    private RayCasting(Entity entity, List<Ray> rays, int rayRange) {
         this.entity = entity;
         this.rays = rays;
-        this.maxRayRange = maxRayRange;
-        this.minRayRange = minRayRange;
+        this.rayRange = rayRange;
+
     }
 
 
     public void castRays() {
-        rayImpulseCounter++;
-        //rayRange = (int) (minRayRange + (maxRayRange - minRayRange) * Math.sin((1 / 35f) * rayImpulseCounter));
-        rayRange = maxRayRange;
+
         for (Ray ray : rays) {
             Vector2D closest = null;
             ReflectingLine line = null;
@@ -73,23 +69,37 @@ public class RayCasting {
     }
 
     public void render(Graphics2D g) {
+//        int r = ThreadLocalRandom.current().nextInt(0, 256);
+//        int gr = ThreadLocalRandom.current().nextInt(0, 256);
+//        int b = ThreadLocalRandom.current().nextInt(0, 256);
+//
+//        g.setColor(new Color(r, gr, b));
+        g.setStroke(new BasicStroke(0.1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+        g.setColor(Color.WHITE);
         rays.forEach(ray -> ray.render(g));
+        g.setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
         renderReflectingLines(g);
     }
 
     private void renderReflectingLines(Graphics2D g) {
 
-        g.setStroke(new BasicStroke(1));
 
+        double ray1Length;
+        double ray2Length;
+        double k = 255f / rayRange;
         for (int i = 1; i <= rays.size(); i++) {
             Ray ray1 = rays.get((i - 1) % rays.size());
             Ray ray2 = rays.get(i % rays.size());
-            if ((Vector2D.getAbs(ray1.getX1() - ray1.getX2(), ray1.getY1() - ray1.getY2()) < rayRange - 1)
-                    && (Vector2D.getAbs(ray2.getX1() - ray2.getX2(), ray2.getY1() - ray2.getY2()) < rayRange - 1)
+            ray1Length = Vector2D.getAbs(ray1.getX1() - ray1.getX2(), ray1.getY1() - ray1.getY2());
+            ray2Length = Vector2D.getAbs(ray2.getX1() - ray2.getX2(), ray2.getY1() - ray2.getY2());
+            if (ray1Length < rayRange - 1
+                    && ray2Length < rayRange - 1
                     && ray1.getCurObj() != null
                     && ray2.getCurObj() != null
                     && ray1.getCurObj() == ray2.getCurObj()
             ) {
+
+                g.setColor(new Color(255, 255, 255, (int) ((rayRange - ray1Length) * k)));
                 g.drawLine((int) ray1.getX2(), (int) ray1.getY2(), (int) ray2.getX2(), (int) ray2.getY2());
             }
         }

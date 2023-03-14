@@ -25,7 +25,6 @@ public class Level {
     public Level(int screenWidth, int screenHeight) {
         entities = new ArrayList<>();
         this.gameMap = GameMap.newGameMap(1000, 1000, screenWidth, screenHeight);
-        //TODO getEntities
         EntityManager.setGameMap(gameMap);
         Entity player = EntityManager.getNew(EntityType.PLAYER);
         entities.add(player);
@@ -41,7 +40,6 @@ public class Level {
     public void update(Input input, Point mousePosition) {
         entities.forEach(entity -> entity.update(input, mousePosition));
         checkCollision();
-        checkOutOfBorder();
         rayCast();
         camera.update(entities, gameMap);
     }
@@ -67,38 +65,38 @@ public class Level {
                     Interacting.interact(entities.get(i), entities.get(j));
                 }
             }
+
+            checkOutOfBorder(entities.get(i));
+            reflectingLines.addAll(gameMap.getReflectingLines());
+            rayCasting.setReflectingLines(reflectingLines);
         }
-        reflectingLines.addAll(gameMap.getReflectingLines());
-        rayCasting.setReflectingLines(reflectingLines);
     }
 
-    private void checkOutOfBorder() {
-        entities.forEach(entity -> {
-            if (!Collision.areIntersectedRect(
-                    gameMap.getLeftBorder() + entity.getWidth(),
-                    gameMap.getRightBorder() - entity.getWidth(),
-                    gameMap.getTopBorder() + entity.getHeight(),
-                    gameMap.getBottomBorder() - entity.getHeight(),
-                    entity)) {
+    private void checkOutOfBorder(Entity entity) {
+        if (!Collision.areIntersectedRect(
+                gameMap.getLeftBorder() + entity.getWidth(),
+                gameMap.getRightBorder() - entity.getWidth(),
+                gameMap.getTopBorder() + entity.getHeight(),
+                gameMap.getBottomBorder() - entity.getHeight(),
+                entity)) {
 
-                if (entity.getLeft() <= gameMap.getLeftBorder()) {
-                    entity.setX(gameMap.getLeftBorder() + (entity.getWidth() / 2));
-                    entity.setResultantForce(Vector2D.getReflection(GameMap.LEFT_NORMAL, entity.getResultantForce()));
-                }
-                if (entity.getRight() >= gameMap.getRightBorder()) {
-                    entity.setX(gameMap.getRightBorder() - (entity.getWidth() / 2));
-                    entity.setResultantForce(Vector2D.getReflection(GameMap.RIGHT_NORMAL, entity.getResultantForce()));
-                }
-                if (entity.getTop() <= gameMap.getTopBorder()) {
-                    entity.setY(gameMap.getTopBorder() + (entity.getHeight() / 2));
-                    entity.setResultantForce(Vector2D.getReflection(GameMap.TOP_NORMAL, entity.getResultantForce()));
-                }
-                if (entity.getBottom() >= gameMap.getBottomBorder()) {
-                    entity.setY(gameMap.getBottomBorder() - (entity.getHeight() / 2));
-                    entity.setResultantForce(Vector2D.getReflection(GameMap.BOTTOM_NORMAL, entity.getResultantForce()));
-                }
+            if (entity.getLeft() <= gameMap.getLeftBorder()) {
+                entity.setX(gameMap.getLeftBorder() + (entity.getWidth() / 2));
+                entity.setResultantForce(Vector2D.getReflection(GameMap.LEFT_NORMAL, entity.getResultantForce()));
             }
-        });
+            if (entity.getRight() >= gameMap.getRightBorder()) {
+                entity.setX(gameMap.getRightBorder() - (entity.getWidth() / 2));
+                entity.setResultantForce(Vector2D.getReflection(GameMap.RIGHT_NORMAL, entity.getResultantForce()));
+            }
+            if (entity.getTop() <= gameMap.getTopBorder()) {
+                entity.setY(gameMap.getTopBorder() + (entity.getHeight() / 2));
+                entity.setResultantForce(Vector2D.getReflection(GameMap.TOP_NORMAL, entity.getResultantForce()));
+            }
+            if (entity.getBottom() >= gameMap.getBottomBorder()) {
+                entity.setY(gameMap.getBottomBorder() - (entity.getHeight() / 2));
+                entity.setResultantForce(Vector2D.getReflection(GameMap.BOTTOM_NORMAL, entity.getResultantForce()));
+            }
+        }
     }
 
     private void rayCast() {
