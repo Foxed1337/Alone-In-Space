@@ -19,7 +19,7 @@ public class Player extends Entity {
         super(x, y, mass, width, height, speed, resultantForce);
 
         image = ResourceLoader.loadImage("test-ship.png");
-        movingDirection = Vector2D.newVector(1, 1);
+        movingDirection = Vector2D.createVector(1, 1);
         type = EntityType.PLAYER;
     }
 

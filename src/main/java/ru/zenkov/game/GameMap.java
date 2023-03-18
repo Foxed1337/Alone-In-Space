@@ -8,10 +8,11 @@ import java.util.List;
 
 public class GameMap {
     private static final int BORDER_OFFSET = 5;
-    public static final Vector2D LEFT_NORMAL = Vector2D.newVector(-1, 0);
-    public static final Vector2D RIGHT_NORMAL = Vector2D.newVector(1, 0);
-    public static final Vector2D TOP_NORMAL = Vector2D.newVector(0, 1);
-    public static final Vector2D BOTTOM_NORMAL = Vector2D.newVector(0, -1);
+    public static final int CHUNK_SIZE = 500;
+    public static final Vector2D LEFT_NORMAL = Vector2D.createVector(-1, 0);
+    public static final Vector2D RIGHT_NORMAL = Vector2D.createVector(1, 0);
+    public static final Vector2D TOP_NORMAL = Vector2D.createVector(0, 1);
+    public static final Vector2D BOTTOM_NORMAL = Vector2D.createVector(0, -1);
     private final int width;
     private final int height;
     private int leftBorder;
@@ -29,7 +30,7 @@ public class GameMap {
         this.bottomBorder = bottomBorder;
     }
 
-    public static GameMap newGameMap(int width, int height, int screenWidth, int screenHeight) {
+    public static GameMap createGameMap(int width, int height, int screenWidth, int screenHeight) {
         if (width < screenWidth || height < screenHeight)
             throw new IllegalArgumentException("Map size can't be less than screen size");
 
@@ -44,6 +45,21 @@ public class GameMap {
         return new GameMap(width, height, leftBorder, rightBorder, topBorder, bottomBorder);
     }
 
+    public List<Vector2D> getChunksCoordinates() {
+        List<Vector2D> chunks = new ArrayList<>();
+
+        for (int i = 0; i <= width; i += CHUNK_SIZE) {
+            for (int j = 0; j <= height; j += CHUNK_SIZE) {
+                Vector2D chunkCenter = Vector2D.createVector(
+                        leftBorder + i,
+                        topBorder + j);
+                chunks.add(chunkCenter);
+            }
+        }
+
+        return chunks;
+    }
+
     public List<ReflectingLine> getReflectingLines() {
         List<ReflectingLine> res = new ArrayList<>();
         res.add(ReflectingLine.getReflectingLine(getLeftBorder() + BORDER_OFFSET, getTopBorder() + BORDER_OFFSET, getRightBorder() - BORDER_OFFSET, getTopBorder() + BORDER_OFFSET, this));
@@ -53,7 +69,6 @@ public class GameMap {
 
         return res;
     }
-
 
     public int getWidth() {
         return width;

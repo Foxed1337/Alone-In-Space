@@ -40,13 +40,12 @@ public class Ray {
         if (t > 0 && t < 1 && u > 0) {
             double x = x1 + t * (x2 - x1);
             double y = y1 + t * (y2 - y1);
-            return Vector2D.newVector(x, y);
+            return Vector2D.createVector(x, y);
         }
         return null;
     }
 
     public void render(Graphics2D g) {
-
         g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
     }
 

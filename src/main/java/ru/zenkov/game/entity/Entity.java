@@ -3,6 +3,7 @@ package ru.zenkov.game.entity;
 import ru.zenkov.IO.Input;
 import ru.zenkov.phisics.Vector2D;
 import ru.zenkov.phisics.rayCasting.ReflectingLine;
+
 import java.util.List;
 
 import java.awt.*;
@@ -32,7 +33,7 @@ public abstract class Entity {
         this.height = height;
         this.speed = speed;
         this.resultantForce = resultantForce;
-        this.acceleration = Vector2D.newVector(0, 0);
+        this.acceleration = Vector2D.createVector(0, 0);
     }
 
     public abstract void update(Input input, Point mousePosition);
@@ -54,7 +55,6 @@ public abstract class Entity {
 
         x = newX;
         y = newY;
-
     }
 
     private Vector2D addResistAndResultForce(Vector2D resistanceForce, Vector2D resultantForce) {
@@ -69,7 +69,7 @@ public abstract class Entity {
                 ? 0
                 : resultantForce.getY() + resistanceForce.getY();
 
-        return Vector2D.newVector(newX, newY);
+        return Vector2D.createVector(newX, newY);
     }
 
     public int getLeft() {

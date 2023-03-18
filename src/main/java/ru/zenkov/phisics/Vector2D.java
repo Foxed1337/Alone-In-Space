@@ -13,7 +13,7 @@ public class Vector2D {
         this.y = y;
     }
 
-    public static Vector2D newVector(double x, double y) {
+    public static Vector2D createVector(double x, double y) {
         return new Vector2D(x, y);
     }
 
@@ -32,11 +32,11 @@ public class Vector2D {
     }
 
     public static Vector2D multiplyConst(Vector2D v, double c) {
-        return newVector(v.getX() * c, v.getY() * c);
+        return createVector(v.getX() * c, v.getY() * c);
     }
 
     public static Vector2D divideConst(Vector2D v, double c) {
-        return newVector(division(v.getX(), c), division(v.getY(), c));
+        return createVector(division(v.getX(), c), division(v.getY(), c));
     }
 
     public static Vector2D rotate(Vector2D v, double angle) {
@@ -45,7 +45,7 @@ public class Vector2D {
         double sin = Math.sin(angle);
         double newX = (v.getX() * cos - v.getY() * sin);
         double newY = (v.getX() * sin + v.getY() * cos);
-        return newVector(newX, newY);
+        return createVector(newX, newY);
     }
 
     public static double getProjection(Vector2D v1, Vector2D v2) {
@@ -66,7 +66,7 @@ public class Vector2D {
 
     public static Vector2D getUnitVector(double x, double y) {
         double mod = getAbs(x, y);
-        return divideConst(newVector(x, y), mod);
+        return divideConst(createVector(x, y), mod);
     }
 
     private static double division(double a, double b) {
@@ -86,7 +86,7 @@ public class Vector2D {
     }
 
     public Vector2D invert() {
-        return Vector2D.newVector(-this.getX(), -this.getY());
+        return Vector2D.createVector(-this.getX(), -this.getY());
     }
 
     public double getX() {

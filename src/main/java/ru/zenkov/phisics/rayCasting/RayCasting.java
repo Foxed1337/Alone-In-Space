@@ -6,14 +6,11 @@ import ru.zenkov.phisics.Vector2D;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class RayCasting {
     private final List<Ray> rays;
     private final Entity entity;
-
-    private int rayRange;
-
+    private final int rayRange;
     private List<ReflectingLine> reflectingLines;
 
 
@@ -22,7 +19,7 @@ public class RayCasting {
         for (int i = 0; i <= 359; i += 2) {
             double x = Math.cos(Math.toRadians(i));
             double y = Math.sin(Math.toRadians(i));
-            rays.add(new Ray(Vector2D.newVector(x, y)));
+            rays.add(new Ray(Vector2D.createVector(x, y)));
         }
 
         return new RayCasting(entity, rays, rayRange);
@@ -82,7 +79,6 @@ public class RayCasting {
     }
 
     private void renderReflectingLines(Graphics2D g) {
-
 
         double ray1Length;
         double ray2Length;

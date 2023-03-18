@@ -33,13 +33,12 @@ public class EntityManager {
                 10,
                 10,
                 20,
-                Vector2D.newVector(0, 0));
-
+                Vector2D.createVector(0, 0));
     }
 
     private static Rock getRock() {
         int minSize = 10;
-        int maxSize = 100;
+        int maxSize = 110;
         int size = ThreadLocalRandom.current().nextInt(minSize, maxSize + 1);
 
         int minX = size + gameMap.getLeftBorder();
@@ -63,6 +62,6 @@ public class EntityManager {
         double forceX = forceMod * Math.cos(forceAngle);
         double forceY = forceMod * Math.sin(forceAngle);
 
-        return new Rock(x, y, mass, size, size, 0, Vector2D.newVector(forceX, forceY));
+        return new Rock(x, y, mass, size, size, 0, Vector2D.createVector(forceX, forceY));
     }
 }
