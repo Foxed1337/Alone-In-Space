@@ -83,6 +83,7 @@ public class RayCasting {
         double ray1Length;
         double ray2Length;
         double k = 255f / rayRange;
+        double q = 3f / rayRange;
         for (int i = 1; i <= rays.size(); i++) {
             Ray ray1 = rays.get((i - 1) % rays.size());
             Ray ray2 = rays.get(i % rays.size());
@@ -94,7 +95,7 @@ public class RayCasting {
                     && ray2.getCurObj() != null
                     && ray1.getCurObj() == ray2.getCurObj()
             ) {
-
+                g.setStroke(new BasicStroke((int) ((rayRange - ray1Length) * q), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
                 g.setColor(new Color(255, 255, 255, (int) ((rayRange - ray1Length) * k)));
                 g.drawLine((int) ray1.getX2(), (int) ray1.getY2(), (int) ray2.getX2(), (int) ray2.getY2());
             }
